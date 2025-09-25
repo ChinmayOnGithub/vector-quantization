@@ -10,8 +10,8 @@ public class vectorQuantizationDecompress {
     private int[][] codeBook; // [codebookSize][tileSize*tileSize*3]
     private int[][] decompressedIndices;
 
-    public void loadCompressedData(String filePath) {
-        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+    public void loadCompressedData(String inputPath, String outputPath) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(inputPath))) {
             // Line 1: metadata -> imageWidth imageHeight tileSize codebookSize channels
             String[] header = reader.readLine().trim().split("\\s+");
             int imageWidth = Integer.parseInt(header[0]);
@@ -42,7 +42,7 @@ public class vectorQuantizationDecompress {
             System.out.println("Compressed data loaded successfully.");
             // Reconstruct and save the image
             BufferedImage img = reconstructImage(imageWidth, imageHeight, channels);
-            saveImage(img, "DecompressedImage.jpg");
+            saveImage(img, outputPath);
         } catch (IOException | NumberFormatException e) {
             e.printStackTrace();
         }
@@ -100,6 +100,6 @@ public class vectorQuantizationDecompress {
 
     public static void main(String[] args) {
         vectorQuantizationDecompress vqd = new vectorQuantizationDecompress();
-        vqd.loadCompressedData("Compressed.txt");
+        vqd.loadCompressedData("Compressed.txt", "DecompressedImage.jpg");
     }
 }

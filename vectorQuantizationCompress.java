@@ -10,7 +10,8 @@ public class vectorQuantizationCompress {
     int tilesPerRow;
     int tilesPerColumn;
 
-    // 3D array to store image tiles (now for color: [row][col][tileSize*tileSize*3])
+    // 3D array to store image tiles (now for color:
+    // [row][col][tileSize*tileSize*3])
     private int[][][] tileGrid;
 
     // Codebook and compressed image
@@ -23,8 +24,7 @@ public class vectorQuantizationCompress {
     int imageWidth, imageHeight;
 
     // Allow user to choose compression quality and tile size
-    public void chooseQualityAndTileSize() {
-        Scanner sc = new Scanner(System.in);
+    public void chooseQualityAndTileSize(Scanner sc) {
         System.out.print("Enter tile size (e.g., 4, 6, 8): ");
         tileSize = sc.nextInt();
         System.out.println("Select compression quality option: ");
@@ -32,11 +32,18 @@ public class vectorQuantizationCompress {
         System.out.println("2. Medium Compression (Medium Quality)");
         System.out.println("3. High Compression (Low Quality)");
         qualityOption = sc.nextInt();
+
         // Determine codebook size based on quality
         switch (qualityOption) {
-            case 1: codeBookSize = 256; break;
-            case 2: codeBookSize = 128; break;
-            case 3: codeBookSize = 16; break;
+            case 1:
+                codeBookSize = 256;
+                break;
+            case 2:
+                codeBookSize = 128;
+                break;
+            case 3:
+                codeBookSize = 16;
+                break;
             default:
                 System.out.println("Invalid option; defaulting to Medium Compression.");
                 codeBookSize = 128;
@@ -79,9 +86,10 @@ public class vectorQuantizationCompress {
         }
     }
 
-    // Improved codebook initialization: sample tiles from across the entire image (no change needed)
+    // Improved codebook initialization: sample tiles from across the entire image
+    // (no change needed)
     public void initializeCodebook() {
-        codeBook = new int[codeBookSize][tileSize * tileSize];
+        codeBook = new int[codeBookSize][tileSize * tileSize * 3];
         int totalTiles = tilesPerRow * tilesPerColumn;
         int step = Math.max(1, totalTiles / codeBookSize);
         int count = 0;
@@ -92,14 +100,16 @@ public class vectorQuantizationCompress {
                 if (flatIndex % step == 0 && count < codeBookSize) {
                     codeBook[count++] = tileGrid[row][col].clone();
                 }
-                if (count >= codeBookSize) break;
+                if (count >= codeBookSize)
+                    break;
             }
-            if (count >= codeBookSize) break;
+            if (count >= codeBookSize)
+                break;
         }
 
         // Fill any remaining codebook vectors if image had fewer tiles
         while (count < codeBookSize) {
-            codeBook[count++] = new int[tileSize * tileSize]; // blank tiles
+            codeBook[count++] = new int[tileSize * tileSize * 3]; // blank tiles
         }
 
         System.out.println("Codebook initialized with " + count + " vectors.");
@@ -131,13 +141,13 @@ public class vectorQuantizationCompress {
 
     // Find the closest vector in the codebook using Euclidean distance (for color)
     public int findClosestCodebookVector(int[] tile) {
-        int minDistance = Integer.MAX_VALUE;
+        long minDistance = Integer.MAX_VALUE;
         int bestIndex = 0;
         for (int i = 0; i < codeBookSize; i++) {
-            int distance = 0;
+            long distance = 0;
             for (int j = 0; j < tileSize * tileSize * 3; j++) {
                 int diff = tile[j] - codeBook[i][j];
-                distance += diff * diff;
+                distance += (long) diff * diff;
             }
             if (distance < minDistance) {
                 minDistance = distance;
@@ -147,7 +157,8 @@ public class vectorQuantizationCompress {
         return bestIndex;
     }
 
-    // Save compressed image and codebook to file (update codebook write/read for color)
+    // Save compressed image and codebook to file (update codebook write/read for
+    // color)
     public void saveCompressedFile(String filename) {
         try (BufferedWriter bw = new BufferedWriter(new FileWriter(filename))) {
             // Write metadata: image width, height, tile size, codebook size, color flag
@@ -176,13 +187,15 @@ public class vectorQuantizationCompress {
     // Main method
     public static void main(String[] args) {
         vectorQuantizationCompress compressor = new vectorQuantizationCompress();
-        Scanner sc = new Scanner(System.in);
-        System.out.print("Give file path : ");
-        String filePath = sc.nextLine();
-        compressor.chooseQualityAndTileSize();
-        compressor.loadImage(filePath);
-        compressor.initializeCodebook();
-        compressor.quantizeImage();
-        compressor.saveCompressedFile("Compressed.txt");
+
+        try (Scanner sc = new Scanner(System.in)) {
+            System.out.print("Give file path : ");
+            String filePath = sc.nextLine();
+            compressor.chooseQualityAndTileSize(sc);
+            compressor.loadImage(filePath);
+            compressor.initializeCodebook();
+            compressor.quantizeImage();
+            compressor.saveCompressedFile("Compressed.txt");
+        }
     }
 }

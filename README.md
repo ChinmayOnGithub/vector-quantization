@@ -174,11 +174,6 @@ This project demonstrates how to compress and decompress a grayscale image using
   0 1 2 3 4 5 6 11 7 8 10 11 11 13 10 11 13 13 11 2 1 1 0 8 10 3 4 1 1 1 1 14 15 15 15 8 3 
   ...
   ```
-
- - **Multi-Threading and core utilization**
-  <img width="1365" height="767" alt="image" src="https://github.com/user-attachments/assets/52426531-b977-437e-b639-a2447c791129" />
-
-
 - **Compressed image:**
 
   ![Decompressed Image](DecompressedImage.jpg)
